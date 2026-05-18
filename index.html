@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI is the new UI | 極致流暢的指揮艙</title>
+    <style>
+        :root {
+            --bg:      oklch(99% 0.002 240);
+            --surface: oklch(100% 0 0);
+            --fg:      oklch(18% 0.012 250);
+            --muted:   oklch(54% 0.012 250);
+            --border:  oklch(92% 0.005 250);
+            --accent:  oklch(58% 0.18 255);
+
+            --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+            
+            --max-width: 1100px;
+            --header-height: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-body);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        a:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.03em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .btn-primary {
+            background: var(--fg);
+            color: var(--bg);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        /* Hero */
+        .hero {
+            padding-top: 160px;
+            padding-bottom: 120px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 8vw, 84px);
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .hero p {
+            font-size: clamp(18px, 2vw, 22px);
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 0;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Audience */
+        .audience {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .audience-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .service-card {
+            padding: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent);
+        }
+
+        .service-card h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .service-card p {
+            font-size: 15px;
+            color: var(--muted);
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* UI elements */
+        .ui-decoration {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80vw;
+            height: 60vh;
+            background: radial-gradient(circle at 50% 50%, rgba(88, 175, 255, 0.05) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="ui-decoration"></div>
+    
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">AI is the new UI</a>
+            <div class="nav-links">
+                <a href="#audience">目標客戶</a>
+                <a href="#services">核心服務</a>
+            </div>
+            <a href="signup.html" class="btn-primary">立刻報名</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <span class="section-tag" style="margin-bottom: 24px;">Beta Launching 2026</span>
+            <h1>將海量專案雜務<br>收斂為極致流暢的指揮艙</h1>
+            <p>用動態生成式 UI，將複雜的通訊數據轉化為即時決策工具。為 PM 團隊打造的自動化異步協作系統。</p>
+            <a href="signup.html" class="btn-primary" style="padding: 12px 32px; font-size: 16px;">開啟指揮艙報名</a>
+        </div>
+    </header>
+
+    <section id="audience" class="audience">
+        <div class="container">
+            <div class="audience-content">
+                <span class="section-tag">服務對象</span>
+                <h2>專為「專案管理部門」而生</h2>
+                <p style="font-size: 20px; color: var(--fg); margin-top: 24px;">您是否每天過著「肉墊般」的生活？</p>
+                <p style="margin-top: 16px; color: var(--muted);">手動爬梳 Slack、LINE、Email 裡的零散對話，再將其更新進看板。我們服務那些被海量雜務淹沒、渴望奪回主動權的 PM 團隊。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <span class="section-tag" style="text-align: center; display: block;">核心能力</span>
+            <h2 style="text-align: center; margin-bottom: 12px;">三層架構，極速交付</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">⚡</div>
+                    <h3>資訊串接層</h3>
+                    <p>全面接通 Slack、LINE 與 Email。將散落的對話碎片轉化為可處理的數據流（Tokens），與 LLM 底層 API 無縫整合。</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔄</div>
+                    <h3>核心架構層</h3>
+                    <p>部署專屬 AI Agent Swarms。背景異步運行，自動抓取進度、分類資訊並排除異常，讓系統 24/7 為您工作。</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🖥️</div>
+                    <h3>前端互動層</h3>
+                    <p>客製化動態生成式 UI。介面根據數據脈絡即時渲染微元件（甘特圖、風險圖），實現零阻力的指揮體驗。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="text-align: center; background: var(--fg); color: var(--bg);">
+        <div class="container">
+            <h2 style="color: var(--bg); margin-bottom: 24px;">準備好奪回您的時間了嗎？</h2>
+            <a href="signup.html" class="btn-primary" style="background: var(--bg); color: var(--fg); padding: 14px 40px; font-size: 18px;">預約專屬 Demo</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="logo">AI is the new UI</div>
+                <div>© 2026 AI is the new UI. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

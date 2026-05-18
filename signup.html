@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加入預約名單 | AI is the new UI</title>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg:      oklch(99% 0.002 240);
+            --surface: oklch(100% 0 0);
+            --fg:      oklch(18% 0.012 250);
+            --muted:   oklch(54% 0.012 250);
+            --border:  oklch(92% 0.005 250);
+            --accent:  oklch(58% 0.18 255);
+
+            --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .signup-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+        }
+
+        .header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--fg);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(88, 175, 255, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--fg);
+            color: var(--bg);
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            margin-top: 12px;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .success-state {
+            text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: var(--fg);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function SignupForm() {
+            const [submitted, setSubmitted] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const [formData, setFormData] = useState({
+                name: '',
+                email: '',
+                company: '',
+                message: ''
+            });
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                try {
+                    // 請將 YOUR_FORM_ID 替換為您的 Formspree ID
+                    const FORM_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+
+                    const response = await fetch(FORM_ENDPOINT, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    if (response.ok) {
+                        setSubmitted(true);
+                    } else {
+                        console.error('Submission failed');
+                        alert('提交失敗，請檢查 Form ID 是否正確。');
+                    }
+                } catch (error) {
+                    console.error('Error submitting form', error);
+                    alert('發生網路錯誤，請稍後再試。');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleChange = (e) => {
+                setFormData({
+                    ...formData,
+                    [e.target.name]: e.target.value
+                });
+            };
+
+            if (submitted) {
+                return (
+                    <div className="signup-card success-state">
+                        <div className="success-icon">✓</div>
+                        <h1>報名成功</h1>
+                        <p>指揮艙通訊已建立。我們將在 24 小時內聯繫您，為您的團隊部署專屬 AI 代理群。</p>
+                        <div style={{marginTop: '32px', padding: '16px', background: 'var(--bg)', borderRadius: '8px', fontFamily: 'ui-monospace', fontSize: '13px', textAlign: 'left', color: 'var(--accent)'}}>
+                            {`> INITIALIZING_DECK...\n> AGENT_SWARM_READY\n> CONNECTION_ESTABLISHED`}
+                        </div>
+                        <a href="index.html" className="back-link">← 回到首頁</a>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="signup-card">
+                    <div className="header">
+                        <h1>預約指揮艙 Demo</h1>
+                        <p>留下您的資訊，讓我們幫您把髒活交給 AI。</p>
+                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>姓名</label>
+                            <input 
+                                type="text" 
+                                name="name" 
+                                className="form-control" 
+                                placeholder="王小明" 
+                                required 
+                                value={formData.name}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>企業 Email</label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                className="form-control" 
+                                placeholder="name@company.com" 
+                                required 
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>公司名稱</label>
+                            <input 
+                                type="text" 
+                                name="company" 
+                                className="form-control" 
+                                placeholder="AI is the new UI" 
+                                required 
+                                value={formData.company}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>您最想解決的雜務（選填）</label>
+                            <textarea 
+                                name="message" 
+                                className="form-control" 
+                                rows="3" 
+                                placeholder="例如：手動更新甘特圖、爬梳 LINE 紀錄..."
+                                value={formData.message}
+                                onChange={handleChange}
+                            ></textarea>
+                        </div>
+                        <button type="submit" className="btn-submit" disabled={loading}>
+                            {loading ? '正在發送指令...' : '送出預約申請'}
+                        </button>
+                    </form>
+                    <a href="index.html" className="back-link" style={{textAlign: 'center'}}>← 回到首頁</a>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SignupForm />);
+    </script>
+</body>
+</html>
